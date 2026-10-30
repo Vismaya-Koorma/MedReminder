@@ -1,0 +1,32 @@
+# Python & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment files and credentials
+.env
+.env.local
+*.pem
+*.key
+
+# Git and OS files
+.git
+.gitignore
+.DS_Store
+Thumbs.db
+
+# Frontend and build artifacts
+frontend/
+node_modules/
+dist/
+build/
+
+# Hardware and logs
+esp32/
+*.log

@@ -1,0 +1,44 @@
+# Environment files and credentials (exclude real secrets, allow example templates)
+.env
+.env.*
+!.env.example
+*.env
+backend/.env
+frontend/.env
+*.pem
+*.key
+
+# ESP32 Secrets (exclude real config.h, allow config.h.example)
+config.h
+esp32/**/config.h
+!config.h.example
+!esp32/**/config.h.example
+
+# Python virtual environments
+venv/
+.venv/
+env/
+backend/venv/
+
+# Python bytecode, caches and generated files
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+
+# Local database dumps and backups
+*.sql
+*.dump
+*.tar
+*.bak
+
+# Node.js dependencies and build output
+node_modules/
+dist/
+build/
+.oxlintrc.json
+
+# Local development logs and system artifacts
+*.log
+.DS_Store
+Thumbs.db

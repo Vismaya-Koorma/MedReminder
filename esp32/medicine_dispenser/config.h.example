@@ -1,0 +1,40 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// ============================================================================
+// Network and Backend Configuration (Template)
+// Copy this file to "config.h" and fill in your actual credentials.
+// "config.h" is ignored by Git to protect your secrets.
+// ============================================================================
+
+// Wi-Fi Credentials
+const char* WIFI_SSID = "YOUR_HOTSPOT_NAME";
+const char* WIFI_PASSWORD = "YOUR_HOTSPOT_PASSWORD";
+
+// Django Backend Server URL (Your computer's hotspot IPv4)
+// Port 8000 is the default Django development port
+const char* SERVER_BASE_URL = "http://10.142.100.23:8000";
+
+// Device Identification
+// Must match the device registered in Django (e.g., MED-001)
+const char* DEVICE_ID = "MED-001";
+const int COMPARTMENT_NUMBER = 1;
+
+// Django REST Framework Auth Token
+// To find your token, check your user profile or run the token lookup command.
+const char* AUTH_TOKEN = "YOUR_AUTH_TOKEN_HERE";
+
+// Sensor & Timing Configuration
+const int SENSOR_PIN = 22;               // FC-51 OUT pin connected to GPIO22
+const int LED_PIN = 19;                  // Medicine Reminder Due LED -> GPIO19
+const int BUZZER_PIN = 18;               // Active Buzzer IO -> GPIO18
+const int BUZZER_ON = LOW;                // Active-LOW trigger: LOW turns transistor ON (buzzer sounds)
+const int BUZZER_OFF = HIGH;              // Active-LOW trigger: HIGH turns transistor OFF (silent)
+const unsigned long LED_BLINK_INTERVAL_MS = 500;    // 500 ms ON / 500 ms OFF non-blocking blink
+const unsigned long BUZZER_BEEP_INTERVAL_MS = 500;  // 500 ms ON / 500 ms OFF non-blocking beep
+const unsigned long REMINDER_POLL_INTERVAL_MS = 3000; // Poll backend for DUE status every 3 seconds
+const unsigned long DEBOUNCE_DELAY_MS = 50;   // 50 ms fast, responsive debounce filter
+const unsigned long HEARTBEAT_INTERVAL_MS = 60000; // Heartbeat every 60 seconds
+const int HTTP_TIMEOUT_MS = 6000;         // 6 second HTTP client timeout to prevent premature aborts
+
+#endif // CONFIG_H

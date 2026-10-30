@@ -1,0 +1,69 @@
+services:
+  # ----------------------------------------------------------------------------
+  # PostgreSQL Service (Containerized Database Option - Optional / Dual-Mode)
+  # ----------------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    container_name: medicine_reminder_postgres
+    restart: unless-stopped
+    profiles: ["docker-db"]
+    environment:
+      POSTGRES_DB: ${DB_NAME:-medicine_reminder_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      # Exposes container PostgreSQL port to host so desktop tools (e.g. pgAdmin) can connect
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-medicine_reminder_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - medicine_network
+
+  # ----------------------------------------------------------------------------
+  # Django REST Framework Backend
+  # ----------------------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: medicine_reminder_backend
+    restart: unless-stopped
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-medicine-reminder-secret-key-change-in-prod}
+      - DEBUG=${DEBUG:-True}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0,*}
+      - DB_NAME=${DB_NAME:-medicine_reminder_db}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_HOST=${DB_HOST:-host.docker.internal}
+      - DB_PORT=${DB_PORT:-5432}
+      - TIME_ZONE=${TIME_ZONE:-Asia/Kolkata}
+      - MISSED_DOSE_GRACE_MINUTES=${MISSED_DOSE_GRACE_MINUTES:-120}
+      - REMINDER_CHECK_INTERVAL_SECONDS=${REMINDER_CHECK_INTERVAL_SECONDS:-60}
+    ports:
+      # Exposes Django on host port 8000 (accessible by React frontend & ESP32 via LAN IP)
+      - "8000:8000"
+    volumes:
+      # Mount backend source code for live development reloading without rebuilding image
+      - ./backend:/app
+    extra_hosts:
+      # Enables backend to reach host Windows services (like local Windows PostgreSQL) via host.docker.internal
+      - "host.docker.internal:host-gateway"
+    networks:
+      - medicine_network
+
+volumes:
+  # Dedicated named volume for PostgreSQL data persistence across container stop/restarts
+  postgres_data:
+    name: medicine_reminder_postgres_data
+
+networks:
+  medicine_network:
+    name: medicine_reminder_network
+    driver: bridge
