@@ -42,7 +42,9 @@ if render_hostname and render_hostname not in ALLOWED_HOSTS:
 if os.getenv('RENDER') and '.onrender.com' not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append('.onrender.com')
 
-# Known local/development origins
+# Deployed Render frontend and local development origins
+DEPLOYED_FRONTEND_ORIGIN = 'https://medreminder-zwuh.onrender.com'
+
 DEFAULT_DEV_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
@@ -51,6 +53,7 @@ DEFAULT_DEV_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://10.142.100.23:5173',
     'http://10.142.100.23:8000',
+    DEPLOYED_FRONTEND_ORIGIN,
 ]
 
 # CSRF Trusted Origins for Render and production domains
@@ -59,6 +62,9 @@ if csrf_env:
     CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_env.split(',') if origin.strip()]
 else:
     CSRF_TRUSTED_ORIGINS = list(DEFAULT_DEV_ORIGINS)
+
+if DEPLOYED_FRONTEND_ORIGIN not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append(DEPLOYED_FRONTEND_ORIGIN)
 
 if render_hostname:
     render_csrf = f'https://{render_hostname}'
@@ -209,6 +215,10 @@ if cors_origins_env:
     CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins_env.split(',') if origin.strip()]
 else:
     CORS_ALLOWED_ORIGINS = list(DEFAULT_DEV_ORIGINS)
+
+# Always ensure the deployed frontend origin is allowed
+if DEPLOYED_FRONTEND_ORIGIN not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append(DEPLOYED_FRONTEND_ORIGIN)
 
 if render_hostname:
     render_cors = f'https://{render_hostname}'
