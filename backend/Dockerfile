@@ -26,5 +26,5 @@ COPY backend /app/
 # Expose port (defaults to 8000; Render dynamically maps PORT at runtime)
 EXPOSE 8000
 
-# Production entrypoint using Gunicorn bound to 0.0.0.0 and dynamic PORT
-CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 3 --threads 2 --timeout 120 config.wsgi:application"]
+# Startup entrypoint: run collectstatic and migrate on Render, then start Gunicorn
+CMD ["sh", "-c", "if [ \"$RENDER\" = \"true\" ]; then python manage.py collectstatic --noinput && python manage.py migrate --noinput && exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 3 --threads 2 --timeout 120 config.wsgi:application; else exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 3 --threads 2 --timeout 120 config.wsgi:application; fi"]
